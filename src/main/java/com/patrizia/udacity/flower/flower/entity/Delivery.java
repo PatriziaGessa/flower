@@ -3,11 +3,12 @@ package com.patrizia.udacity.flower.flower.entity;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
+@NamedQuery(name = "Delivery.findByName",
+        query = "select d from Delivery d where d.name = :name")
 
 @Entity
 public class Delivery {
@@ -22,6 +23,10 @@ public class Delivery {
     private LocalDateTime deliveryTime; //Includes both date and time - simpler than having two separate fields
     @Type(type = "yes_no")
     private Boolean competed;
+
+    // added CascadeType.REMOVE to automatically clear any associated plants when removed
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "delivery", cascade = CascadeType.ALL)
+    private List<Plant> plants;
 
     public Long getId() {
         return id;
@@ -61,5 +66,13 @@ public class Delivery {
 
     public void setCompeted(Boolean competed) {
         this.competed = competed;
+    }
+
+    public List<Plant> getPlants() {
+        return plants;
+    }
+
+    public void setPlants(List<Plant> plants) {
+        this.plants = plants;
     }
 }
